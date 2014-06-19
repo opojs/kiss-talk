@@ -1,0 +1,73 @@
+.intro-slide h2 {
+    margin-top: 50px;
+}
+
+.performance-slide table {
+    margin-top: 50px;
+    width: 100%;
+}
+
+.performance-slide table strong {
+    color: #13daec;
+}
+
+.performance-slide table th {
+    text-transform: uppercase;
+    padding-bottom: 10px;
+}
+
+.performance-slide table th span {
+    display: block;
+    font-size: 0.5em;
+    line-height: 1;
+    text-transform: lowercase;
+}
+
+.performance-on-web-slide ul {
+    margin-top: 30px;
+}
+
+.areas-slide .col,
+.rendering-ops .col {
+    width: 49%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.rendering-ops h2 {
+    margin-bottom: 40px;
+}
+
+.rendering-ops img {
+    width: 550px;
+    height: auto;
+}
+
+.rendering-ops p {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.holy-grail-anim-slide img {
+    width: 500px;
+    box-shadow: none !important;
+}
+
+.cheap-ops-slide img {
+    width: 700px;
+    height: auto;
+}
+
+.cheap-ops-slide a {
+    display: block;
+    text-align: center;
+}
+
+.layout-trash-code-slide h3 {
+    text-align: left;
+}
+
+.layout-trash-code-slide pre {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}

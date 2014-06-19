@@ -1,0 +1,166 @@
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="../jquery.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            background-color: #f5f5f5;
+            font-family: Georgia, serif;
+            font-style: italic;
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            width: 800px;
+            margin: 0 auto;
+            padding: 50px 0;
+        }
+
+        .animate {
+            position: relative;
+            width: 800px;
+            height: 100px;
+            margin-bottom: 50px;
+        }
+
+        .animate:last-child {
+            margin-bottom: 0;
+        }
+
+        .animate:after {
+            content: '';
+            position: absolute;
+            top: 125px;
+            height: 1px;
+            left: 0;
+            right: 0;
+            background: #666;
+        }
+
+        .box {
+            position: absolute;
+            top: 0;
+            background: red;
+            width: 100px;
+            height: 100px;
+            color: white;
+            font-size: 14px;
+            line-height: 100px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .toggle {
+            width: 70px;
+            position: absolute;
+            right: 0;
+            top: 45px;
+        }
+
+        .disable-anim .box {
+            animation: none !important;
+            -webkit-animation: none !important;
+        }
+
+        #position-css .box {
+            animation: position-css 5s linear alternate infinite;
+            -webkit-animation: position-css 5s linear alternate infinite;
+        }
+
+        #translate-css .box {
+            animation: translate-css 5s linear alternate infinite;
+            -webkit-animation: translate-css 5s linear alternate infinite;
+        }
+
+        #translate3d-css .box {
+            animation: translate3d-css 5s linear alternate infinite;
+            -webkit-animation: translate3d-css 5s linear alternate infinite;
+        }
+
+        @keyframes position-css {
+            from { left: 0px; }
+            to { left: 600px; }
+        }
+
+        @-webkit-keyframes position-css /* Safari and Chrome */ {
+            from { left: 0px; }
+            to { left: 600px; }
+        }
+
+        @keyframes translate-css {
+            from { transform: translate(0, 0); }
+            to { transform: translate(600px, 0); }
+        }
+
+        @-webkit-keyframes translate-css /* Safari and Chrome */ {
+            from { -webkit-transform: translate(0, 0); }
+            to { -webkit-transform: translate(600px, 0); }
+        }
+
+        @keyframes translate3d-css {
+            from { transform: translate3d(0, 0, 0); }
+            to { transform: translate3d(600px, 0, 0); }
+        }
+
+        @-webkit-keyframes translate3d-css /* Safari and Chrome */ {
+            from { -webkit-transform: translate3d(0, 0, 0); }
+            to { -webkit-transform: translate3d(600px, 0, 0); }
+        }
+
+        .slow-motion-video,
+        .slow-motion-video:visited {
+            text-decoration: none;
+            text-align: center;
+            color: #000;
+            display: block;
+            margin-top: 50px;
+        }
+
+        .slow-motion-video:hover,
+        .slow-motion-video:active {
+            color: #333;
+        }
+
+        object {
+            margin: 400px auto 100px auto;
+            display: block;
+        }
+    </style>
+    <script>
+        function toggle(event) {
+            var buttonEl = $(event.currentTarget),
+                animateEl = buttonEl.closest('.animate');
+
+            animateEl.toggleClass('disable-anim');
+
+            if (buttonEl.text() === 'Turn On') {
+                buttonEl.text('Turn Off');
+            } else {
+                buttonEl.text('Turn On');
+            }
+        }
+
+        $(document).ready(function () {
+            $('#container').on('click', '.toggle', toggle);
+        });
+    </script>
+</head>
+<body>
+    <div id="container">
+        <div class="animate" id="position-css">
+            <div class="box">left</div>
+            <button class="toggle">Turn Off</button>
+        </div>
+        <div class="animate" id="translate3d-css">
+            <div class="box">translate()</div>
+            <button class="toggle">Turn Off</button>
+        </div>
+    </div>
+
+    <object width="600"><param name="movie" value="//www.youtube.com/v/-62uPWUxgcg?version=3&amp;hl=pt_PT"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="//www.youtube.com/v/-62uPWUxgcg?version=3&amp;hl=pt_PT" type="application/x-shockwave-flash" width="420" height="315" allowscriptaccess="always" allowfullscreen="true"></embed></object>
+</body>
+</html>

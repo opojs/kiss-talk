@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>KISS - Keep it smooth stupid</title>
+
+		<meta name="description" content="">
+		<meta name="author" content="b">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<link rel="stylesheet" href="css/styles.css">
+
+		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section class="intro-slide">
+					<h1>KISS</h1>
+					<p>(keep it smooth stupid)</p>
+
+					<h2>Frontend performance<br> on web applications</h2>
+					<p>
+						<small>by André Cruz / <a href="http://twitter.com/satazor">@satazor</a></small>
+					</p>
+				</section>
+
+				<section class="performance-slide" data-background="#007777">
+					<h2>Performance</h2>
+
+					<p>Is an ambigious word, depends on what we are trying to achieve</p>
+
+					<table>
+						<tr>
+							<th>Aircraft</th>
+							<th>Capacity</th>
+							<th>Range <span>miles</span></th>
+							<th>Speed <span>mph</span></th>
+							<th>Debit <span>cap x mph</span></th>
+						</tr>
+						<tr>
+							<td>Boeing 777</td>
+							<td>375</td>
+							<td>4630</td>
+							<td>610</td>
+							<td>228.700</td>
+						</tr>
+						<tr>
+							<td>Boeing 747</td>
+							<td><strong>470</strong></td>
+							<td>4150</td>
+							<td>610</td>
+							<td><strong>286.700</strong></td>
+						</tr>
+						<tr>
+							<td>Concorde</td>
+							<td>132</td>
+							<td>4000</td>
+							<td><strong>1350</strong></td>
+							<td>178.200</td>
+						</tr>
+						<tr>
+							<td>DC-8-50</td>
+							<td>146</td>
+							<td><strong>8720</strong></td>
+							<td>544</td>
+							<td>179.424</td>
+						</tr>
+					</table>
+
+					<aside class="notes">
+						<ul>
+							<li>Performance é uma palavra ambígua, depende das condições e objectivos</li>
+							<li>Qual o melhor avião? Qual é o que tem melhor performance?</li>
+						</ul>
+					</aside>
+				</section>
+
+				<section class="performance-on-web-slide" data-background="#836953">
+					<h2>Performance on the web</h2>
+
+					<p>.. really matters</p>
+
+					<ul>
+						<li>User demands and expecations are high</li>
+						<li>Users don't like slow and slugish experience</li>
+						<li>New technology empower us to make rich and interactive web applications</li>
+					</ul>
+				</section>
+
+				<section class="areas-slide" data-background="#B1361E">
+					<div class="col">
+						<h2>Page load</h2>
+
+						<ul>
+							<li>SPDY / HTTP 2</li>
+							<li>Concat + minify JS & CSS</li>
+							<li>GZIP</li>
+							<li>CDN</li>
+							<li>Image sprites</li>
+							<li>Cache-busting</li>
+							<li>Lazy load</li>
+							<li>Scripts at the end & styles at the start</li>
+						</ul>
+
+					</div>
+					<div class="col">
+						<h2>Runtime</h2>
+
+						<ul>
+							<li>Transitions & animations</li>
+							<li>Scrolling</li>
+							<li>Resizing</li>
+							<li>Number of DOM elements</li>
+							<li>DOM rendering & manipulation</li>
+							<li>Memory & GC</li>
+						</ul>
+					</div>
+
+					<aside class="notes">
+						<ul>
+							<li>Performance nas aplicações resume-se a duas fases: Page load e Runtime</li>
+							<li>YSlow da YAHOO ajuda no Pageload</li>
+							<li>DevTools ajuda no Pageload mas principalmente no Runtime</li>
+						</ul>
+					</aside>
+				</section>
+
+				<section class="rendering-ops" data-background="#444837">
+					<h2>Rendering operations</h2>
+
+					<div class="col">
+						<ul>
+							<li>Recalculate style</li>
+							<li>Layout</li>
+							<li>Paint setup & Paint</li>
+							<li>Composite layers</li>
+						</ul>
+					</div>
+					<div class="col">
+						<img src="img/devtools.png" alt="DevTools">
+					</div>
+
+					<p>All of this in &lt;16ms on a 60hz monitor to avoid loosing frames</p>
+
+					<aside class="notes">
+						<ul>
+							<li>Sequencia de operações de renderização</li>
+							<li>Em geral, funciona em waterfall mas pode começar directamente numa das fases</li>
+						</ul>
+					</aside>
+				</section>
+
+
+				<section data-background="#444837">
+					<h2>Recalculate style</h2>
+
+					<p>Matches the CSS styles with the DOM structure</p>
+					<p>Everytime a CSS property changes</p>
+					<p>Usually a fast operation, slower on complex CSS selectors</p>
+				</section>
+
+				<section data-background="#444837">
+					<h2>Layout</h2>
+
+					<p>Calculation of positions and geometry</p>
+					<p>When certain CSS properties change, e.g.: width, height, top, left, margin</p>
+					<p>Takes longer when the DOM structure is very complex</p>
+				</section>
+
+				<section data-background="#444837">
+					<h2>Paint Setup & Paint</h2>
+
+					<p>Fill out the pixels for each element into layers</p>
+					<p>When certain CSS properties change, e.g.: color, border-radius, background</p>
+					<p>Takes longer when using inefficient styles</p>
+					<p>Slower on low end devices</p>
+				</section>
+
+				<section data-background="#444837">
+					<h2>Composite layers</h2>
+
+					<p>Draw layers into the screen</p>
+					<p>When certain CSS properties change, e.g.: transform, opacity</p>
+					<p>Very cheap to do</p>
+				</section>
+
+				<section data-background="#444837">
+					<img src="img/devtools2.jpg" alt="DevTools properties">
+				</section>
+
+				<section class="holy-grail-anim-slide" data-background="#4B4B65">
+					<h2>Animate like a boss</h2>
+
+					<img src="img/likeaboss.png" alt="Like a boss">
+
+					<p>Animate properties that only require Composite Layers.</p>
+					<p>Avoid others, specially the ones that require Layout.</p>
+				</section>
+
+				<section class="cheap-ops-slide" data-background="#4B4B65">
+					<h2>Animate like a boss</h2>
+
+					<img src="img/cheap-operations.jpg" alt="Cheap operations">
+				</section>
+
+				<section class="cheap-ops-slide" data-background="#4B4B65">
+					<h2>Animate like a boss</h2>
+
+					<a href="examples/animations" target="_blank">DEMO</a>
+				</section>
+
+				<section data-background="#0E400D">
+					<h2>Layout trashing</h2>
+
+					<p>When the DOM is modified via JavaScript it is marked as dirty. The browser is lazy and wants to wait until the end of current operation or frame to handle the modifications</p>
+
+					<p>If we ask for a value back from the DOM before that we force the browser to handle it early</p>
+
+					<p>If you abuse it, you are doing layout trashing</p>
+				</section>
+
+				<section class="layout-trash-code-slide" data-background="#0E400D" data-markdown>
+					<script type="text/template">
+					## Layout trashing
+
+					```js
+					var slideEl = $('.slide');
+					// BAD - read, write, read, write
+					slideEl.width(slideEl.height());
+					slideEl.css('margin', slideEl.parent().height());
+
+					```
+
+					```js
+					var slideEl = $('.slide');
+					var height = slideEl.height();
+					var parentHeight = slideEl.parent().height();
+					// GOOD - read, read, write, write
+					slideEl.width(height);
+					slideEl.css('margin', parentHeight);
+					```
+					<a href="examples/layout_trashing" target="_blank">DEMO</a>
+					</script>
+				</section>
+
+				<section data-background="#0E400D">
+					<h2>Layout trashing</h2>
+
+					<p>More severe in a large decoupled code base where each component handle its rendering and measurement independently.</p>
+
+					<p>To counter this you may use <a href="https://github.com/wilsonpage/fastdom">FastDom</a>, a library that queues reading and writing operations and groups them.</p>
+				</section>
+
+				<section data-background="#B1361E">
+					<h2>Scroll</h2>
+
+					<p>Avoid expensive styles that slow down painting</p>
+					<p>GPU accelerate the layer with transform: translateZ(0)</p>
+					<p><a href="http://www.thecssninja.com/javascript/pointer-events-60fps" target="_blank">Turn off</a> hover effects that may trigger during scroll</p>
+					<p>Don't do anything more than getting a scroll offset in the scroll event handler, delay the rest to a requestAnimationFrame or use a throttler</p>
+					<p>On mobile, overflow: auto performs poorly, use <a href="http://css-tricks.com/snippets/css/momentum-scrolling-on-ios-overflow-elements/" target="_blank">-webkit-overflow-scrolling: touch</a></p>
+				</section>
+
+				<section data-background="#B1361E">
+					<h2>Scroll</h2>
+
+					<a href="examples/scroll" target="_blank">DEMO</a>
+				</section>
+
+				<section data-background="#007777">
+					<h2>Resize</h2>
+
+					<p>Turn off animations during the resize</p>
+					<p>Avoid doing a lot of work, delay stuff using requestAnimationFrame or use a throttler</p>
+					<p>Pay special attention to layout trashing when adapting to resolutions dynamically via JavaScript</p>
+				</section>
+
+				<section data-background="#444837">
+					<h2>Memory & GC</h2>
+
+					<p>Avoid unnecessary allocations of objects, arrays or other structures</p>
+					<p>GC blocks the main thread which usually also blocks the UI thread</p>
+					<p>The higher the unnecessary memory allocated, the longer the Gargabe Collection cycle will take</p>
+					<p>If your memory is unexpectedly high, check for memory leaks using the <a href="https://developer.chrome.com/devtools/docs/javascript-memory-profiling" target="_blank">DevTools Memory profiling</a></p>
+				</section>
+
+				<section>
+					<h2>Do not guess, test it!</h2>
+
+					<p>Because browsers are always evolving and the things you know today may no longer apply<p>
+					<p>Each case should be treated separately</p>
+				</section>
+
+				<section data-background="img/thatsall.jpg">
+				</section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>

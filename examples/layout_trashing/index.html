@@ -1,0 +1,174 @@
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="../jquery.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            background-color: #f5f5f5;
+            font-family: Georgia, serif;
+            font-style: italic;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* side bar controls */
+        #sidebar {
+            padding: 20px;
+            position: fixed;
+            top: 200px;
+            right: 50px;
+            width: 250px;
+            z-index: 2;
+            background-color: #f5f5f5;
+        }
+
+        #sidebar ul {
+            margin: 0;
+            margin-bottom: 20px;
+            padding: 0;
+            list-style: none;
+        }
+
+        /* Scrolling container that moves with the body */
+        #container {
+            margin-left: auto;
+            margin-right: auto;
+            width: 800px;
+        }
+
+        /* Images are in little containers with slow-to-paint effects */
+        #container .imgcontainer {
+            position: relative;
+            width: 640px;
+            margin: 15px;
+
+            overflow: hidden;
+        }
+
+        #container .imgcontainer img {
+            display: block;
+            margin: auto;
+            width: 400px;
+            height: 300px;
+            border: 2px solid darkblue;
+            border-radius: 5px;
+        }
+
+        #time {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        var total = 500,
+            tmpl = '<div class="imgcontainer"><img src="../common/images/8719572381_f50f72de46_z.jpg"></div>',
+            containerEl,
+            sidebarEl,
+            timeEl,
+            time;
+
+        function startMeasure() {
+            timeEl.empty();
+            time = Date.now();
+        }
+
+        function endMeasure() {
+            timeEl.html((Date.now() - time) + ' ms');
+        }
+
+        function trash() {
+            var x;
+
+            startMeasure();
+
+            containerEl.empty();                    // Write
+
+            for (x = 0; x < total; x += 1) {
+                containerEl
+                    .append(tmpl)                   // Write
+                    .width(sidebarEl.width() * 2);  // Read
+
+            }
+
+            endMeasure();
+        }
+
+        function normal() {
+            var x,
+                width;
+
+            startMeasure();
+
+            width = sidebarEl.width() * 2;  // Read
+            containerEl.empty();            // Write
+
+            for (x = 0; x < total; x += 1) {
+                containerEl
+                    .append(tmpl)           // Write
+                    .width(width);          // Write
+            }
+
+            endMeasure();
+        }
+
+        function documentFragment() {
+            var x,
+                width,
+                df;
+
+            startMeasure();
+
+            df = $(document.createDocumentFragment());
+            width = sidebarEl.width() * 2;  // Read
+            containerEl.empty();            // Write
+
+            for (x = 0; x < total; x += 1) {
+                containerEl
+                    .append(tmpl)
+                    .width(width);
+            }
+
+            containerEl.append(df);         // Write
+
+            endMeasure();
+        }
+
+        $(document).ready(function () {
+            containerEl = $('#subcontainer');
+            timeEl = $('#time');
+            sidebarEl = $('#sidebar');
+
+            $('#trash').on('click', trash);
+            $('#normal').on('click', normal);
+            $('#document-fragment').on('change', documentFragment);
+        });
+    </script>
+</head>
+<body>
+    <div id="sidebar">
+        <ul>
+            <li>
+                <input type="radio" id="trash" name="type">
+                <label for="trash">Trash</label>
+            </li>
+            <li>
+                <input type="radio"id="normal"  name="type">
+                <label for="normal">Normal</label>
+            </li>
+            <li>
+                <input type="radio" id="document-fragment" name="type">
+                <label for="document-fragment">Document fragment</label>
+            </li>
+        </ul>
+
+        Time: <span id="time"></span>
+    </div>
+
+    <div id="container">
+        <div id="subcontainer"></div>
+    </div>
+</body>
+</html>

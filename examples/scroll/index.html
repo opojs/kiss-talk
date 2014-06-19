@@ -1,0 +1,343 @@
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="../jquery.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            background-color: #f5f5f5;
+            font-family: Georgia, serif;
+            font-style: italic;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Utility class to disable css transitions */
+        .disable-transition,
+        .disable-transition:before,
+        .disable-transition:after,
+        .disable-transition *,
+        .disable-transition *:before,
+        .disable-transition *:after {
+            -webkit-transition: none !important;
+            -moz-transition: none !important;
+            -o-transition: none !important;
+            -ms-transition: none !important;
+            transition: none !important;
+        }
+
+        /* Utility class to disable pointer events */
+        /* Used on lists when scrolling to improve performance */
+        .disable-pointer,
+        .disable-pointer * {
+            pointer-events: none !important;
+        }
+
+        /* Header and controls */
+        #topbar {
+            position: fixed;
+            box-sizing: border-box;
+            top: 0;
+            width: 100%;
+            height: 65px;
+            background-color: white;
+            padding-left: 15px;
+            padding-bottom: 15px;
+            z-index: 3;
+        }
+
+        #topbar h2 {
+            display: inline-block;
+        }
+
+        /* side bar controls */
+        #sidebar {
+            position: fixed;
+            top: 200px;
+            right: 50px;
+            width: 250px;
+            z-index: 2;
+            background-color: #f5f5f5;
+        }
+
+        #sidebar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Scrolling container that moves with the body */
+        #container {
+            position: absolute;
+            top: 65px;
+            left: 50%;
+            bottom: 0;
+            margin-left: -400px;
+            width: 800px;
+            overflow-x: hidden;
+            overflow-y: scroll;
+        }
+
+        body.transformed #container,
+        body.transformed #sidebar,
+        body.transformed #topbar {
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+
+        /* Images are in little containers with slow-to-paint effects */
+        #container .imgcontainer {
+            position: relative;
+            background: gray;
+            width: 640px;
+            margin: 15px auto;
+            border: 1px solid gray;
+            border-radius: 2px;
+
+            overflow: hidden;
+            background-size: 3px 3px;
+        }
+
+        body.expensive #container .imgcontainer {
+            background-image:   linear-gradient(45deg, #eee 25%, transparent 25%, transparent),
+                                linear-gradient(-45deg, #eee 25%, transparent 25%, transparent),
+                                linear-gradient(45deg, transparent 75%, #eee 75%),
+                                linear-gradient(-45deg, transparent 75%, #eee 75%);
+            background-size: 3px 3px;
+        }
+
+        #container .imgcontainer img {
+            display: block;
+            margin: auto;
+            width: 400px;
+            height: 300px;
+
+            -webkit-transition: 0.2s ease-out;
+            transition: 0.2s ease-out;
+            -webkit-transition-property: width, height;
+        }
+
+        #container.resized img {
+            max-width: 640px;
+        }
+
+        /* Hover effects */
+        #container .imgcontainer:hover {
+            box-shadow: 0 0 100px red;
+        }
+
+        #container .imgcontainer:hover img {
+            -webkit-filter: blur(5px);
+            width: 100%;
+            height: 500px;
+        }
+    </style>
+    <script>
+        var timer,
+            containerEl,
+            subContainerEl,
+            bodyEl,
+            logoEl,
+            hoverEffects,
+            jsJank,
+            win;
+
+        function toggleExpansiveStyles() {
+            bodyEl.toggleClass('expensive');
+        }
+
+        function toggleHoverEffects() {
+            if (hoverEffects) {
+                containerEl.off('scroll.hover-effects');
+                subContainerEl.css('pointer-events', '');
+                hoverEffects = false;
+                if (timer) {
+                    clearTimeout(timer);
+                    timer = null;
+                }
+            } else {
+                hoverEffects = true;
+                containerEl.on('scroll.hover-effects', function () {
+                    subContainerEl.css('pointer-events', 'none');
+                    timer && clearTimeout(timer);
+                    timer = setTimeout(function() {
+                        timer = null;
+                        subContainerEl.css('pointer-events', '');
+                    }, 200);
+                });
+            }
+        }
+
+        function toggleTransformedLayer() {
+            bodyEl.toggleClass('transformed');
+        }
+
+        function toggleJsJank() {
+            if (jsJank) {
+                containerEl.off('scroll.js-jank');
+                jsJank = false;
+            } else {
+                jsJank = true;
+                containerEl.on('scroll.js-jank', function () {
+                    var x;
+
+                    // Do not do expensive work here
+                    // Use a throtler
+                    for (x = 0; x < 30000000; x += 1) {}
+
+                    // Ok to read scrollTop
+                    // Everything else will usually cause a reflow
+                    // If you need to manipulate the DOM, use requestAnimationFrame
+                });
+            }
+        }
+
+        $(document).ready(function () {
+            containerEl = $('#container');
+            subContainerEl = $('#subcontainer');
+            bodyEl = $(document.body);
+            logoEl = $('#topbar h2');
+            win = $(window);
+
+            $('#expensive').on('change', toggleExpansiveStyles);
+            $('#hover-effects').on('change', toggleHoverEffects);
+            $('#transformed').on('change', toggleTransformedLayer);
+            $('#js-jank').on('change', toggleJsJank);
+
+            toggleExpansiveStyles();
+        });
+    </script>
+</head>
+<body>
+    <div id="topbar">
+        <h2>My Application Logo</h2>
+    </div>
+    <div id="sidebar">
+        <ul>
+            <li>
+                <input type="checkbox" id="expensive" checked="checked">
+                <label for="expensive">Expensive styles</label>
+            </li>
+            <li>
+                <input type="checkbox" id="hover-effects" checked="checked">
+                <label for="hover-effects">Hover effects during scroll</label>
+            </li>
+            <!--<li>
+                <input type="checkbox" id="transformed">
+                <label for="transformed">Promote to own layers</label>
+            </li>-->
+            <li>
+                <input type="checkbox" id="js-jank">
+                <label for="js-jank">Activate JS Jank on Scroll</label>
+            </li>
+        </ul>
+    </div>
+
+    <div id="container">
+        <div id="subcontainer">
+            <div class="imgcontainer"><img src="../common/images/8719572381_f50f72de46_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8728078959_f36a01681d_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8728652089_9662f66402_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8728710673_9e64393b7f_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8728711377_c7daac73eb_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8728841777_834c1d72b0_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8728851935_460978658e_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8729201284_91fa2b63a4_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8729302651_a704cbbc1a_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8729456006_299c650271_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8729870013_a4106d733a_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8730388123_1e111a9725_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8730421763_4c72b417d4_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8730464718_afdf4cb9e2_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8730476495_f11151665b_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8730515243_c7312643a5_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8730614662_05ff0ccf70_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8730684226_bba9a66f21_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8730828682_896ff7db7b_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8730908218_3629fd5c38_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8730927831_abb64d9f8c_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8731053390_b1998f9b75_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8731188621_6297182d4d_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8731192596_490f5e0667_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8731198719_83c6fda2b7_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8731409194_b3fe063575_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8731432069_92d54d5ba9_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8731513778_0ca54dc6a6_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8731639755_24d28ecf12_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8731828138_dcba4426ff_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8731981308_c8ac157c16_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8731999670_e2b6f786ba_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8732037593_cc1921ea44_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8732291619_05d53cfb1d_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8732301828_dee3cacc1d_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8732456079_4369f24152_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8732734492_97f06826ca_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8732741453_ea50428e63_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8732746400_a36c07092f_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8732818369_d1bb4d8758_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8733134424_b56a8544d6_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8733214039_410a3120fe_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8733548919_0cd2083b5d_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8733584327_bfff5a5ef2_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8733785087_5a6c66a9e9_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8733795301_6ed67b7136_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8733846852_c093f2ca89_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8733914687_c5a4756144_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8733966967_b4587c6c7a_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8734367861_3352d76231_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8734645834_831c691e13_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8734675391_4d6b2e8861_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8734718952_bc590f4e3f_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8734761105_89f7b937ce_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8734782004_45c544d313_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8734836268_14ecc9c416_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8734896471_0d06068bb0_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8735155218_67bb62d5c1_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8735292280_4872e216a4_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8735371929_8b9d707be5_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8735554047_d32dee6136_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8735644504_de53e035ac_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8735740675_9e66bb5bc0_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8735741127_3f895121ab_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8735747643_d2a1f832ab_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8735844281_44263ec15d_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8736001725_8af5b83756_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8736090972_d11daa9cf8_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8736102321_0a60c401a2_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8736105193_ff3d1e6c56_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8736295104_2f8ed8087a_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8736646211_2233a312a9_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8736694322_ee5c5b23c9_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8736705905_4e2bf961e2_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8736858422_0c85faa52c_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8736874308_7743a0be98_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8736916761_80f8286e93_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8736981951_0827c798f6_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8737071965_9e2b3aa154_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8737073581_f73a25c148_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8737075060_72859f50c5_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8737122211_58491d07de_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8737337574_3e6054e5d3_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8737642771_a37d63d5d8_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8737684895_986b6e97fd_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8737831630_8b1f2ce9e8_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8737941102_e50292c483_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8738264515_61356911b4_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8738350037_b97c2cc10b_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8738500307_d3bb4cda64_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8738550786_aeecdf541d_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8738661809_64db509d3d_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8738871618_16c8542613_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8739173930_4d1106db31_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8739348520_55e22925c3_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8739518406_182e4c379d_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8739519920_f367277c79_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8739739688_1d813006ee_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8739748278_e357f26ab9_z.jpg"></div>
+            <div class="imgcontainer"><img src="../common/images/8740031322_f3332eb3be_z.jpg"></div>
+        </div>
+    </div>
+</body>
+</html>
