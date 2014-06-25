@@ -89,7 +89,7 @@
             for (x = 0; x < total; x += 1) {
                 containerEl
                     .append(tmpl)                   // Write
-                    .width(sidebarEl.width() * 2);  // Read
+                    .width(sidebarEl.width() * 2);  // Read & Write
 
             }
 
@@ -126,7 +126,7 @@
             containerEl.empty();            // Write
 
             for (x = 0; x < total; x += 1) {
-                containerEl
+                df
                     .append(tmpl)
                     .width(width);
             }
